@@ -129,8 +129,6 @@ void Board::mouseInput(int button, int state, int x, int y) {
 			int cx = (x - 55) / 66.375;
 			int cy = (y - 55) / 66.375;
 
-			cout << "Danger: " << pieces[cx][cy].dangerWhite << " " << pieces[cx][cy].dangerBlack << endl;
-
 			if (PieceSeleced) {
 				if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
 
@@ -1145,23 +1143,13 @@ Move Board::bestMove(int level, int side) {
 		}
 	}
 
-	cout << "Number of different moves are: " << count << endl;
-
 	head = list.getHead();
-
-	while (head != NULL) {
-		cout << head->getMove().getX() << " " << head->getMove().getY() << " " << head->getMove().getType() << endl;
-		cout << head->getPoints() << endl;
-		head = head->getNext();
-	}
-
 	
 	if (count > 0) {
 		best = list.returnMove(rand() % count + 1);
 	}
 	else {
 		whiteWin = true;
-		cout << "lololo" << endl;
 		checker.GameOver = true;
 	}
 	

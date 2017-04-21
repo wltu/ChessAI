@@ -8,16 +8,19 @@ void adjustSize(int w, int h);
 void mouse(int button, int state, int x, int y);
 void keyboard(unsigned char key, int x, int y);
 
-Board board;
+Board board = Board();
 
 int main(int argc, char **argv) {
-	board = Board();
 	int size = board.getSize();
+
+	cout << "Welcome to Chess!" << endl;
+	cout << "Press \"R\" to restart the game." << endl;
+	cout << "Press \"Esc\" to exit the game." << endl;
 
 	// init GLUT and create main window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(400, 100);
+	glutInitWindowPosition(400, 150);
 	glutInitWindowSize(size, size);
 	glutCreateWindow("Chess");
 
