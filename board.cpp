@@ -1,6 +1,6 @@
 #include "board.h"
 
-
+//Base Board of the game
 Board::Board() {
 	this->start = true;
 	this->PieceSeleced = false;
@@ -9,6 +9,7 @@ Board::Board() {
 	this->moveCount = 0;
 }
 
+//Draw the board on OpenGL
 void Board::draw() {
 	if (start == true) {
 		setUp();
@@ -86,7 +87,7 @@ void Board::draw() {
 	glutSwapBuffers();
 }
 
-
+//Restricted the size of the game to a fixed size.
 void Board::fixedSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -117,6 +118,7 @@ void Board::fixedSize(int w, int h) {
 	glutReshapeWindow(640, 640);
 }
 
+//Control any mouse input.
 void Board::mouseInput(int button, int state, int x, int y) {
 	if (!checker.GameOver) {
 		if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON) {
@@ -128,6 +130,8 @@ void Board::mouseInput(int button, int state, int x, int y) {
 		if (x >= 55 && x <= 585 && y >= 55 && y <= 585) {
 			int cx = (x - 55) / 66.375;
 			int cy = (y - 55) / 66.375;
+
+			//cout << "Danger: " << pieces[cx][cy].dangerWhite << " " << pieces[cx][cy].dangerBlack << endl;
 
 			if (PieceSeleced) {
 				if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
@@ -151,12 +155,17 @@ void Board::mouseInput(int button, int state, int x, int y) {
 									whiteWin = true;
 								}
 							}
-
+							
+							checker.resetHighlight(pieces);
 							current.move(pieces, cx, cy, boardPositionX, boardPositionY, turn);
+
+							turn = !turn;
 
 							CheckGameStatus();
 
 							if (AIGames && !blackWin && ! whiteWin) {
+								draw();
+
 								currentMove = Move(cx,cy, current.posX, current.posY, current.getType());
 
 								AIMove();
@@ -187,6 +196,7 @@ void Board::mouseInput(int button, int state, int x, int y) {
 					checker.Hightlight(pieces, cx, cy, false);
 					this->current = pieces[cx][cy];
 
+					
 					PieceSeleced = true;
 
 					SaveTheKing(current);
@@ -205,12 +215,13 @@ void Board::mouseInput(int button, int state, int x, int y) {
 	
 }
 
+//Set up all the chess pieces on the board.
 void Board::setBoard() {
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (pieces[i][j].onBoard == true) {
-				setPiece(pieces[i][j], pieces[i][j].getX(), pieces[i][j].getY());
+				setPiece(pieces[i][j], boardPositionX[i], boardPositionY[j]);
 			}
 
 			pieces[i][j].dangerBlack = false;
@@ -219,6 +230,7 @@ void Board::setBoard() {
 	}
 }
 
+//Set up each chess piece on the board.
 void Board::setPiece(ChessPiece piece, float x, float y) {
 	
 	if (piece.getSide() == 0) {
@@ -383,6 +395,7 @@ void Board::setPiece(ChessPiece piece, float x, float y) {
 
 }
 
+//Draw the base of the chess piece.
 void Board::drawChessBase(float x, float y) {
 
 	glBegin(GL_QUADS);
@@ -428,55 +441,46 @@ void Board::setUp() {
 	//0.689655 x 0.689655 units cell.
 
 	for (int i = 0; i < 8; i++) {
+		boardPositionX[i] = -2.414793 + 0.689655*i;
+		boardPositionY[i] = 2.068965517 - 0.689655*i;
+	}
+
+	for (int i = 2; i < 6; i++) {
 		for (int j = 0; j < 8; j++) {
 			pieces[j][i] = ChessPiece();
 		}
 	}
 
 	for (int i = 0; i < 8; i++) {
-		boardPositionX[i] = -2.414793 + 0.689655*i;
-		boardPositionY[i] = 2.068965517 - 0.689655*i;
+		pieces[i][1] = ChessPiece('p', 1,i,1);
+
+		pieces[i][6] = ChessPiece('p', 0,i,6);
 	}
 
-	for (int i = 0; i < 8; i++) {
-		pieces[i][1] = ChessPiece('p', 1, boardPositionX[i], boardPositionY[1],i,1);
+	pieces[0][0] = ChessPiece('r', 1,0,0);
+	pieces[7][0] = ChessPiece('r', 1,7,0);
+	pieces[1][0] = ChessPiece('k', 1,1,0);
+	pieces[6][0] = ChessPiece('k', 1,6,0);
+	pieces[2][0] = ChessPiece('b', 1,2,0);
+	pieces[5][0] = ChessPiece('b', 1,5,0);
+	pieces[3][0] = ChessPiece('Q', 1, 3,0);
+	pieces[4][0] = ChessPiece('K', 1,4,0);
 
-		pieces[i][6] = ChessPiece('p', 0, boardPositionX[i], boardPositionY[6],i,6);
-	}
-
-	pieces[0][0] = ChessPiece('r', 1, boardPositionX[0], boardPositionY[0],0,0);
-	pieces[7][0] = ChessPiece('r', 1, boardPositionX[7], boardPositionY[0],7,0);
-	pieces[1][0] = ChessPiece('k', 1, boardPositionX[1], boardPositionY[0],1,0);
-	pieces[6][0] = ChessPiece('k', 1, boardPositionX[6], boardPositionY[0],6,0);
-	pieces[2][0] = ChessPiece('b', 1, boardPositionX[2], boardPositionY[0],2,0);
-	pieces[5][0] = ChessPiece('b', 1, boardPositionX[5], boardPositionY[0],5,0);
-	pieces[3][0] = ChessPiece('Q', 1, boardPositionX[3], boardPositionY[0],3,0);
-	pieces[4][0] = ChessPiece('K', 1, boardPositionX[4], boardPositionY[0],4,0);
-
-	pieces[0][7] = ChessPiece('r', 0, boardPositionX[0], boardPositionY[7],0,7);
-	pieces[7][7] = ChessPiece('r', 0, boardPositionX[7], boardPositionY[7],7,7);
-	pieces[1][7] = ChessPiece('k', 0, boardPositionX[1], boardPositionY[7],1,7);
-	pieces[6][7] = ChessPiece('k', 0, boardPositionX[6], boardPositionY[7],6,7);
-	pieces[2][7] = ChessPiece('b', 0, boardPositionX[2], boardPositionY[7],2,7);
-	pieces[5][7] = ChessPiece('b', 0, boardPositionX[5], boardPositionY[7],5,7);
-	pieces[3][7] = ChessPiece('Q', 0, boardPositionX[3], boardPositionY[7],3,7);
-	pieces[4][7] = ChessPiece('K', 0, boardPositionX[4], boardPositionY[7],4,7);
-
-
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
-			if (pieces[j][i].getSide() == -1) {
-				pieces[j][i].setX(boardPositionX[j]);
-				pieces[j][i].setY(boardPositionY[i]);
-			}
-		}
-	}
+	pieces[0][7] = ChessPiece('r', 0, 0,7);
+	pieces[7][7] = ChessPiece('r', 0, 7,7);
+	pieces[1][7] = ChessPiece('k', 0, 1,7);
+	pieces[6][7] = ChessPiece('k', 0, 6,7);
+	pieces[2][7] = ChessPiece('b', 0,2,7);
+	pieces[5][7] = ChessPiece('b', 0,5,7);
+	pieces[3][7] = ChessPiece('Q', 0,3,7);
+	pieces[4][7] = ChessPiece('K', 0,4,7);
 }
 
 int Board::getSize() {
 	return this->size;
 }
 
+//Return a node containina all possible moves allowd by the piece without putting the king in danger.
 Node* Board::SaveTheKing(ChessPiece piece) {
 	MoveList list = MoveList();
 
@@ -487,137 +491,87 @@ Node* Board::SaveTheKing(ChessPiece piece) {
 	ChessPiece temp2;
 
 	bool remove = false;
-	if (piece.getType() != 'K') {
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
+	bool king;
+	int side;
 
-				if (pieces[j][i].Selected && (j != x || i != y)) {
-					temp2 = pieces[j][i];
+	
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
 
-					pieces[j][i] = temp;
-					pieces[j][i].posX = j;
-					pieces[j][i].posY = i;
-					pieces[j][i].setX(temp2.getX());
-					pieces[j][i].setY(temp2.getY());
+			if (pieces[j][i].Selected && (j != x || i != y)) {
 
-					pieces[x][y] = ChessPiece();
-					pieces[x][y].setX(temp.getX());
-					pieces[x][y].setY(temp.getY());
+				temp2 = pieces[j][i];
+				side = piece.getSide();
 
-					ClearDanger();
-					checker.setDangers(pieces);
+				if (checker.whiteKingX == x && checker.whiteKingY == y) {
+					checker.moveWhiteKing(j, i);
+					king = true;
+				}
+				else if (checker.blackKingX == x && checker.blackKingY == y) {
+					checker.moveBlackKing(j, i);
 
-					if (piece.getSide() == 0) {
-						if (pieces[checker.whiteKingX][checker.whiteKingY].dangerWhite) {
-							remove = true;
-						}
-						else {
-							blackWin = false;
-						}
+					king = true;
+				}
+				else {
+					king = false;
+				}
+
+				pieces[j][i] = piece;
+				pieces[x][y] = ChessPiece();
+
+				ClearDanger();
+				checker.setDangers(pieces);
+
+				if (side == 0) {
+					if (pieces[checker.whiteKingX][checker.whiteKingY].dangerWhite) {
+						remove = true;
 					}
 					else {
-						if (pieces[checker.blackKingX][checker.blackKingY].dangerBlack) {
-							remove = true;
-						}
-						else {
-							whiteWin = false;
-						}
-					}
-
-					pieces[j][i] = temp2;
-					pieces[j][i].posX = j;
-					pieces[j][i].posY = i;
-					pieces[j][i].setX(temp2.getX());
-					pieces[j][i].setY(temp2.getY());
-
-					pieces[x][y] = temp;
-					pieces[x][y].posX = x;
-					pieces[x][y].posY = y;
-					pieces[x][y].setX(temp.getX());
-					pieces[x][y].setY(temp.getY());
-
-					ClearDanger();
-					checker.setDangers(pieces);
-
-
-					if (remove) {
-						pieces[j][i].Selected = false;
-						remove = false;
-					}
-					else {
-						list.add(Move(j, i, x, y, temp.getType()), 0);
+						blackWin = false;
 					}
 				}
-			}
+				else {
+					if (pieces[checker.blackKingX][checker.blackKingY].dangerBlack) {
+						remove = true;
+					}
+					else {
+						whiteWin = false;
+					}
+				}
 
-		}
-	}
-	else {
-		if (x + 1 < 8 && (pieces[x + 1][y].getSide() != pieces[x][y].getSide() || !pieces[x + 1][y].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x + 1][y].dangerBlack) {
-				list.add(Move(x + 1, y, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x + 1][y].dangerWhite) {
-				list.add(Move(x + 1, y, x, y, 'K'), 0);
-			}
-		}
-		if (x - 1 >= 0 && (pieces[x - 1][y].getSide() != pieces[x][y].getSide() || !pieces[x - 1][y].onBoard)) {
+				pieces[j][i] = temp2;
 
-			if (pieces[x][y].getSide() == 1 && !pieces[x - 1][y].dangerBlack) {
-				list.add(Move(x - 1, y, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x - 1][y].dangerWhite) {
-				list.add(Move(x - 1, y, x, y, 'K'), 0);
-			}
-		}
-		if (x - 1 >= 0 && y - 1 >= 0 && (pieces[x - 1][y - 1].getSide() != pieces[x][y].getSide() || !pieces[x - 1][y - 1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x - 1][y - 1].dangerBlack) {
-				list.add(Move(x - 1, y - 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x - 1][y - 1].dangerWhite) {
-				list.add(Move(x - 1, y - 1, x, y, 'K'), 0);
-			}
+				pieces[x][y] = piece;
 
-		}
-		if (x - 1 >= 0 && y + 1 < 8 && (pieces[x - 1][y + 1].getSide() != pieces[x][y].getSide() || !pieces[x - 1][y + 1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x - 1][y + 1].dangerBlack) {
-				list.add(Move(x - 1, y + 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x - 1][y + 1].dangerWhite) {
-				list.add(Move(x - 1, y + 1, x, y, 'K'), 0);
-			}
-		}
-		if (x + 1 < 8 && y + 1 < 8 && (pieces[x + 1][y + 1].getSide() != pieces[x][y].getSide() || !pieces[x + 1][y + 1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x + 1][y + 1].dangerBlack) {
-				list.add(Move(x + 1, y + 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x + 1][y + 1].dangerWhite) {
-				list.add(Move(x + 1, y + 1, x, y, 'K'), 0);
-			}
-		}
-		if (x + 1 < 8 && y - 1 >= 0 && (pieces[x + 1][y + 1].getSide() != pieces[x][y].getSide()|| !pieces[x+1][y-1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x + 1][y - 1].dangerBlack) {
-				list.add(Move(x + 1, y - 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x + 1][y - 1].dangerWhite) {
-				list.add(Move(x + 1, y - 1, x, y, 'K'), 0);
-			}
-		}
-		if (y + 1 < 8 && (pieces[x][y + 1].getSide() != pieces[x][y].getSide() || !pieces[x][y+1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x][y + 1].dangerBlack) {
-				list.add(Move(x , y + 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x][y + 1].dangerWhite) {
-				list.add(Move(x, y + 1, x, y, 'K'), 0);
-			}
-		}
+				if (king) {
+					if (side == 0) {
+						checker.moveWhiteKing(x, y);
+					}
+					else {
+						checker.moveBlackKing(x, y);
+					}
+				}
 
-		if (y - 1 >= 0 && (pieces[x][y - 1].getSide() != pieces[x][y].getSide() || !pieces[x][y-1].onBoard)) {
-			if (pieces[x][y].getSide() == 1 && !pieces[x][y - 1].dangerBlack) {
-				list.add(Move(x, y - 1, x, y, 'K'), 0);
-			}
-			if (pieces[x][y].getSide() == 0 && !pieces[x][y - 1].dangerWhite) {
-				list.add(Move(x, y - 1, x, y, 'K'), 0);
+
+				ClearDanger();
+				checker.setDangers(pieces);
+
+
+				if (remove) {
+					pieces[j][i].Selected = false;
+					remove = false;
+				}
+				else {
+					if (king) {
+						if (side == 0 && piece.dangerWhite || side == 1 && piece.dangerBlack) {
+							list.add(Move(j, i, x, y, piece.getType()));
+						}
+					}
+					else {
+						list.add(Move(j, i, x, y, piece.getType()));
+					}
+					
+				}
 			}
 		}
 
@@ -626,88 +580,53 @@ Node* Board::SaveTheKing(ChessPiece piece) {
 	return list.getHead();
 }
 
+//Check if the game is over.
 void Board::CheckGameStatus() {
 	if (!blackWin && !whiteWin) {
-		int x;
-		int y;
 		int side = -1;
+		Node* head = NULL;
+		ChessPiece current;
 
 		if (pieces[checker.blackKingX][checker.blackKingY].dangerBlack) {
 			side = 1;
-			x = checker.blackKingX;
-			y = checker.blackKingY;
 			whiteWin = true;
 		}
 		else if (pieces[checker.whiteKingX][checker.whiteKingY].dangerWhite) {
 			side = 0;
-			x = checker.whiteKingX;
-			y = checker.whiteKingY;
 			blackWin = true;
 		}
 
+		checker.resetHighlight(pieces);
+
 		if (side != -1) {
+
 			for (int i = 0; i < 8; i++) {
 				for (int j = 0; j < 8; j++) {
-					if (pieces[j][i].getSide() == side) {
+					current = pieces[j][i];
+
+					if (current.onBoard && current.getSide() == side) {
 						checker.Hightlight(pieces, j, i, false);
-						SaveTheKing(pieces[j][i]);
+						head = SaveTheKing(current);
 						checker.resetHighlight(pieces);
 
-						if (side == 1 && !whiteWin) {
-							break;
+						if (side == 1) {
+							if (head != NULL) {
+								whiteWin = false;
+								break;
+							}
 						}
-						else if (side == 0 && !blackWin) {
-							break;
+						else {
+							if (head != NULL) {
+								blackWin = false;
+								break;
+							}
 						}
+
 					}
 				}
 			}
 		}
 
-		if (blackWin || whiteWin) {
-			if (blackWin) {
-				checker.Hightlight(pieces, checker.whiteKingX, checker.whiteKingY, false);
-			}
-			else {
-				checker.Hightlight(pieces, checker.blackKingX, checker.blackKingY, false);
-			}
-
-			if ((x - 1) >= 0 && (y - 1) >= 0 && pieces[x - 1][y - 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-
-			if ((x - 1) >= 0 && pieces[x - 1][y].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((x - 1) >= 0 && (y + 1) < 8 && pieces[x - 1][y + 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((y - 1) >= 0 && pieces[x][y - 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((y + 1)  < 8 && pieces[x][y + 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((x + 1) < 8 && (y - 1) >= 0 && pieces[x + 1][y - 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((x + 1) < 8 && (y + 1) < 8 && pieces[x + 1][y + 1].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-			if ((x + 1) < 8 && pieces[x + 1][y].Selected) {
-				blackWin = false;
-				whiteWin = false;
-			}
-
-			checker.resetHighlight(pieces);
-		}
 	}
 
 	if (blackWin) {
@@ -724,27 +643,7 @@ void Board::CheckGameStatus() {
 
 }
 
-void Board::AIMove() {
-	checker.resetHighlight(pieces);
-
-
-	if (moveCount < 2) {
-		nextMove = Opening(currentMove);
-	}
-	else {
-		nextMove = bestMove(1, 1);
-	}
-
-	if (checker.GameOver == false) {
-		this->current = pieces[nextMove.getCX()][nextMove.getCY()];
-		draw();
-
-		//Time delay
-		Sleep(250);
-		current.move(pieces, nextMove.getX(), nextMove.getY(), boardPositionX, boardPositionY, turn);
-	}
-}
-
+//Clear danger area on the board.
 void Board::ClearDanger() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -754,6 +653,7 @@ void Board::ClearDanger() {
 	}
 }
 
+//Reset the game
 void Board::reset() {
 	cout << "Restart Game!" << endl;
 
@@ -772,6 +672,38 @@ void Board::reset() {
 }
 
 //AI methods
+void Board::AIMove() {
+	checker.resetHighlight(pieces);
+
+	if (moveCount < 2) {
+		nextMove = Opening(currentMove);
+	}
+	else {
+		nextMove = bestMove(AILevel + 1, 1);
+	}
+
+	if (checker.GameOver == false) {
+		this->current = pieces[nextMove.getCX()][nextMove.getCY()];
+		draw();
+
+		//Time delay
+		//Sleep(250);
+
+		current.move(pieces, nextMove.getX(), nextMove.getY(), boardPositionX, boardPositionY, turn);
+		if (current.getType() == 'K') {
+			if (current.getSide() == 0) {
+				checker.moveWhiteKing(nextMove.getX(), nextMove.getY());
+			}
+			else {
+				checker.moveBlackKing(nextMove.getX(), nextMove.getY());
+			}
+		}
+	}
+
+	turn = !turn;
+}
+
+//Pre-set opening moves for the AI
 Move Board::Opening(Move start) {
 	Move move;
 	srand(time(NULL));
@@ -984,7 +916,7 @@ Move Board::Opening(Move start) {
 			}
 		}
 		else {
-			move = bestMove(1, 1); //edit to increase AI level.
+			move = bestMove(AILevel + 1, 1); //edit to increase AI level.
 		}
 	}
 
@@ -992,138 +924,448 @@ Move Board::Opening(Move start) {
 }
 
 
-//Note:
-/*
-make it consider all possible moves and use another recurive function to 
-add value to each move.
-
-
-*/
+//Return the move with the best value.
 Move Board::bestMove(int level, int side) {
-	Node* head;
-	int count = 0, max = -100, score = 0;
-	MoveList list = MoveList();
-	Move best, temp;
 
-	int K = 100, Q = 20, k = 10, b = 10, r = 9, p = 2;
-	
+	MoveList move = AllMove(side);
+	Node* head = move.getHead();
+
+	ChessPiece current, replaced;
+	Move best, temp;
+	bool king = false;
+
+	MoveList list = MoveList();
+
+	int max = INT_MIN;
+
+	int num, score, x, y, cx, cy;
+
+
+	while (head != NULL) {
+		//Move piece
+
+		temp = head->getMove();
+		cx = temp.getCX();
+		cy = temp.getCY();
+		x = temp.getX();
+		y = temp.getY();
+		current = pieces[cx][cy];
+		replaced = pieces[x][y];
+
+		pieces[x][y] = current;
+		pieces[x][y].posX = x;
+		pieces[x][y].posY = y;
+
+		pieces[cx][cy] = ChessPiece();
+
+		if (checker.blackKingX == cx && checker.blackKingY == cy) {
+			checker.moveBlackKing(x, y);
+
+			king = true;
+		}
+		else {
+			king = false;
+		}
+
+		score = -ScoreMove(level - 1, !side, max);
+
+		if (score >= max) {
+			if (score > max) {
+				list.clear();
+				max = score;
+			}
+
+			list.add(head->getMove());
+		}
+
+		pieces[x][y] = replaced;
+
+		pieces[cx][cy] = current;
+		pieces[cx][cy].posX = cx;
+		pieces[cx][cy].posY = cy;
+		
+		if (king) {
+			checker.moveBlackKing(cx, cy);
+		}
+
+		head = head->getNext();
+	}
+
+	if (list.size() > 0) {
+		num = (rand() % list.size()) + 1;
+
+		best = list.returnMove(num);
+
+		list.clear();
+	}
+	else {
+		whiteWin = true;
+		checker.GameOver = true;
+	}
+
+	move.clear();
+
+	return best;
+}
+
+//Finding the move with the best value.
+int Board::ScoreMove(int depth, int side, int points) {
+
+	Node* head;
+	Node* temp2;
+	ChessPiece current, replaced;
+	Move temp;
+	int max = INT_MIN;
+	bool king = false;
+	bool exit = false;
+	int score, x, y;
+
+	if (depth == 0) {
+		return calculateScore(side);
+	}
+	else {
+		checker.resetHighlight(pieces);
+
+		for (int j = 2; j < 6; j++) {
+			for (int i = 0; i < 8; i++) {
+				current = pieces[i][j];
+
+				if (current.onBoard && current.getSide() == side) {
+
+					checker.Hightlight(pieces, i, j, false);
+					head = SaveTheKing(current);
+					checker.resetHighlight(pieces);
+
+					while (head != NULL) {
+						//Move piece
+
+						temp2 = head;
+						temp = head->getMove();
+
+						x = temp.getX();
+						y = temp.getY();
+						replaced = pieces[x][y];
+
+						pieces[x][y] = current;
+						pieces[x][y].posX = x;
+						pieces[x][y].posY = y;
+
+						pieces[i][j] = ChessPiece();
+
+						if (checker.whiteKingX == i && checker.whiteKingY == j) {
+							checker.moveWhiteKing(x, y);
+							king = true;
+						}
+						else if (checker.blackKingX == i && checker.blackKingY == j) {
+							checker.moveBlackKing(x, y);
+
+							king = true;
+						}
+						else {
+							king = false;
+						}
+
+						if (points != INT_MIN) {
+							if (max != INT_MIN) {
+								score = -ScoreMove(depth - 1, !side, max);
+							}
+							else {
+								score = -ScoreMove(depth - 1, !side, -points);
+							}	
+						}
+						else {
+							score = -ScoreMove(depth - 1, !side, points);
+						}
+
+						if (-1 * score >= points) {
+
+							if (score > max) {
+								max = score;
+							}
+						}
+						else {
+							exit = true;
+						}
+
+						pieces[x][y] = replaced;
+
+						pieces[i][j] = current;
+						pieces[i][j].posX = i;
+						pieces[i][j].posY = j;
+
+						if (king) {
+							if (side == 0) {
+								checker.moveWhiteKing(i, j);
+							}
+							else {
+								checker.moveBlackKing(i, j);
+							}
+						}
+
+
+						if (!exit) {
+							head = head->getNext();
+							delete temp2;
+						}
+						else {
+							while (head != NULL) {
+								head = head->getNext();
+
+								delete temp2;
+
+								temp2 = head;
+							}
+
+							return score;
+						}
+					}
+
+
+				}
+			}
+		}
+
+
+		for (int j = 0; j < 8; j++) {
+			for (int i = 0; i < 8; i++) {
+				current = pieces[i][j];
+
+				if (current.onBoard && current.getSide() == side) {
+
+					checker.Hightlight(pieces, i, j, false);
+					head = SaveTheKing(current);
+					checker.resetHighlight(pieces);
+
+					while (head != NULL) {
+						//Move piece
+
+						temp2 = head;
+						temp = head->getMove();
+
+						x = temp.getX();
+						y = temp.getY();
+						replaced = pieces[x][y];
+
+						pieces[x][y] = current;
+						pieces[x][y].posX = x;
+						pieces[x][y].posY = y;
+
+						pieces[i][j] = ChessPiece();
+
+						if (checker.whiteKingX == i && checker.whiteKingY == j) {
+							checker.moveWhiteKing(x, y);
+							king = true;
+						}
+						else if (checker.blackKingX == i && checker.blackKingY == j) {
+							checker.moveBlackKing(x, y);
+
+							king = true;
+						}
+						else {
+							king = false;
+						}
+
+
+
+						if (points != INT_MIN) {
+							if (max != INT_MIN) {
+								score = -ScoreMove(depth - 1, !side, max);
+							}
+							else {
+								score = -ScoreMove(depth - 1, !side, -points);
+							}
+						}
+						else {
+							score = -ScoreMove(depth - 1, !side, points);
+						}	
+
+						if (-1 * score >= points) {
+
+							if (score > max) {
+								max = score;
+							}
+						}
+						else {
+							exit = true;
+						}
+
+						pieces[x][y] = replaced;
+
+						pieces[i][j] = current;
+						pieces[i][j].posX = i;
+						pieces[i][j].posY = j;
+
+						if (king) {
+							if (side == 0) {
+								checker.moveWhiteKing(i, j);
+							}
+							else {
+								checker.moveBlackKing(i, j);
+							}
+						}
+
+
+						if (!exit) {
+							head = head->getNext();
+							delete temp2;
+						}
+						else {
+							while (head != NULL) {
+								head = head->getNext();
+
+								delete temp2;
+
+								temp2 = head;
+							}
+
+							return score;
+						}
+					}
+
+
+				}
+			}
+
+			if (j == 2) {
+				j = 5;
+			}
+		}
+		
+	}
+
+	return max;
+}
+
+//Return the value of the board at the current state.
+int Board::calculateScore(int side) {
+	wK = bK = wQ = bQ = wR = bR = wN = bN = wB = bB = wP = bP = 0;
+
+	int currentSide;
+
+	int score;
+	unsigned int wMove = 0, bMove = 0;
+	MoveList list;
+
+	for (unsigned int i = 0; i < 8; i++) {
+		for (unsigned int j = 0; j < 8; j++) {
+			if (pieces[i][j].onBoard) {
+
+				currentSide = pieces[i][j].getSide();
+
+				switch (pieces[i][j].getType()) {
+				case 'K':
+					if (currentSide == 0) {
+						wK++;
+					}
+					else {
+						bK++;
+					}
+					break;
+				case 'Q':
+					if (currentSide == 0) {
+						wQ++;
+					}
+					else {
+						bQ++;
+					}
+					break;
+				case 'r':
+					if (currentSide == 0) {
+						wR++;
+					}
+					else {
+						bR++;
+					}
+					break;
+				case 'k':
+					if (currentSide == 0) {
+						wN++;
+					}
+					else {
+						bN++;
+					}
+					break;
+				case 'b':
+					if (currentSide == 0) {
+						wB++;
+					}
+					else {
+						bB++;
+					}
+					break;
+				case 'p':
+					if (currentSide == 0) {
+						wP++;
+					}
+					else {
+						bP++;
+					}
+					break;
+				}
+
+			}
+		}
+	}
+
+	list = AllMove(0);
+
+	wMove = list.size();
+
+	list.clear();
+
+	list = AllMove(1);
+
+	bMove = list.size();
+
+	list.clear();
+
+	score = K*(wK - bK) + Q*(wQ - bQ) + r*(wR - bR) + k*(wN - bN) + b*(wB - bB) + p*(wP - bP)
+		+ mobilityWeight*(wMove - bMove);
+	/*
+		cout << "K: " << wK << " " << bK << endl;
+		cout << "Q: " << wQ << " " << bQ << endl;
+		cout << "R: " << wR << " " << bR << endl;
+		cout << "N: " << wN << " " << bN << endl;
+		cout << "B: " << wB << " " << bB << endl;
+		cout << "P: " << wP << " " << bP << endl;
+		cout << "Score " << score << " " << wMove << " " << bMove << endl;
+	*/
+
+	if (side == 0) {
+		return score;
+	}
+	else{
+		return score*-1;
+	}
+}
+
+//Return all possible move by one of the side.
+MoveList Board::AllMove(int side) {
+	Node* head = NULL;
+	Node* temp;
+
+	MoveList list = MoveList();
+
+	checker.resetHighlight(pieces);
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (pieces[j][i].onBoard) {
 				if (pieces[j][i].getSide() == side) {
-
 					checker.Hightlight(pieces, j, i, false);
 
 					head = SaveTheKing(pieces[j][i]);
+					temp = head;
 
-					checker.setDangers(pieces);
 					while (head != NULL) {
-						temp = head->getMove();
+						list.add(head->getMove());
 
-						if (side == 1) {
-							if (moveCount < 4) {
-								if (pieces[j][i].getType() == 'p' && j >= 1 && j <= 6) {
-									if (pieces[j][i].hasMoved == false) {
-										score += 1;
-									}
-								}
-							}
-
-							
-							if (pieces[j][i].getType() == 'p' && pieces[temp.getX()][temp.getY()].dangerBlack && pieces[temp.getX()][temp.getY()].dangerWhite) {
-								score += 3;
-							}
-							else if (pieces[j][i].getType() == 'p' && pieces[j][i].dangerBlack && pieces[j][i].dangerWhite) {
-								score -= 2;
-							}
-							
-							if (pieces[j][i].dangerBlack) {
-
-								if (!pieces[temp.getX()][temp.getY()].dangerBlack) {
-									switch (pieces[j][i].getType()) {
-									case 'K':
-										score += K;
-										break;
-									case 'Q':
-										score += Q;
-										break;
-									case 'k':
-										score += k;
-										break;
-									case 'b':
-										score += b;
-										break;
-									case 'r':
-										score += r;
-										break;
-									case 'p':
-										score += p;
-										break;
-									}
-								}
-							}
-
-							if (pieces[temp.getX()][temp.getY()].dangerBlack) {
-								switch (pieces[j][i].getType()) {
-								case 'K':
-									score -= K / 2;
-									break;
-								case 'Q':
-									score -= Q / 2;
-									break;
-								case 'k':
-									score -= k / 2;
-									break;
-								case 'b':
-									score -= b / 2;
-									break;
-								case 'r':
-									score -= r / 2;
-									break;
-								case 'p':
-									score -= p / 2;
-									break;
-								}
-							}
-
-							if (pieces[temp.getX()][temp.getY()].onBoard) {
-								switch (pieces[temp.getX()][temp.getY()].getType()) {
-								case 'K':
-									score += K;
-									break;
-								case 'Q':
-									score += Q;
-									break;
-								case 'k':
-									score += k;
-									break;
-								case 'b':
-									score += b;
-									break;
-								case 'r':
-									score += r;
-									break;
-								case 'p':
-									score += p;
-									break;
-								}
-							}
-							
-							
-							if (score >= max) {
-								list.add(temp, score);
-								max = score;
-								count++;
-							}
-
-							score = 0;
-						}
-
-						Node* temp2 = head;
 						head = head->getNext();
 
-						delete temp2;
+						delete temp;
 
+						temp = head;
+						
 					}
 
 					checker.resetHighlight(pieces);
@@ -1131,33 +1373,6 @@ Move Board::bestMove(int level, int side) {
 			}
 		}
 	}
-	
 
-	while(list.getHead() != NULL){
-		if (list.peek(count) != max) {
-			list.remove(count);
-			count--;
-		}
-		else {
-			break;
-		}
-	}
-
-	head = list.getHead();
-	
-	if (count > 0) {
-		best = list.returnMove(rand() % count + 1);
-	}
-	else {
-		whiteWin = true;
-		checker.GameOver = true;
-	}
-	
-
-	//recursive function
-	//move
-	//check the importantance with recurvice function, and add points
-	// move back
-
-	return best;
-}
+	return list;
+}	

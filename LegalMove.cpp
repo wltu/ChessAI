@@ -5,6 +5,7 @@ using namespace std;
 LegalMove::LegalMove() {
 }
 
+//Hilight light possible move for the current chess piece.
 void LegalMove::Hightlight(ChessPiece board[8][8], int x, int y, bool danger) {
 	if (!GameOver) {
 
@@ -103,6 +104,7 @@ void LegalMove::Hightlight(ChessPiece board[8][8], int x, int y, bool danger) {
 	}
 }
 
+//Show possible rook moves.
 void LegalMove::RookMove(ChessPiece board[8][8], int x, int y, int num, int side, bool danger){
 	i = 1;
 
@@ -242,6 +244,7 @@ void LegalMove::RookMove(ChessPiece board[8][8], int x, int y, int num, int side
 
 }
 
+//Show possible bishop moves.
 void LegalMove::BishopMove(ChessPiece board[8][8], int x, int y, int num, int side, bool danger) {
 	i = 1;
 
@@ -380,6 +383,8 @@ void LegalMove::BishopMove(ChessPiece board[8][8], int x, int y, int num, int si
 	}
 }
 
+
+//Show Castling for the king.
 void LegalMove::Castling(ChessPiece board[8][8], int x, int y) {
 	bool legal = true;
 
@@ -474,10 +479,10 @@ void LegalMove::resetHighlight(ChessPiece board[8][8]) {
 }
 
 void LegalMove::moveWhiteKing(int x, int y) {
-	whiteKingX = x;
-	whiteKingY = y;
+	this->whiteKingX = x;
+	this->whiteKingY = y;
 }
 void LegalMove::moveBlackKing(int x, int y) {
-	blackKingX = x;
-	blackKingY = y;
+	this->blackKingX = x;
+	this->blackKingY = y;
 }

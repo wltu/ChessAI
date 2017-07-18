@@ -9,24 +9,39 @@ using namespace std;
 class MoveList {
 	public:
 		MoveList() {
-			head = NULL;
+			this->head = NULL;
+			count = 0;
 		}
 
-		void add(Move move, int points) {
-			Node* temp = new Node(move, points);
+		int size() {
+			return count;
+		}
+
+		void add(Move move) {
+			Node* temp = new Node(move);
 
 			temp->setNext(head);
 			head = temp;
+
+			this->count++;
 		}
 
-		int peek(int num) {
+		void clear() {
 			Node* temp = head;
 
-			for (int i = 0; i < num - 1; i++) {
-				temp = temp->getNext();
+			while (head != NULL) {
+				head = head->getNext();
+				
+				delete temp;
+
+				temp = head;
 			}
 
-			return temp->getPoints();
+			this->count = 0;
+		}
+
+		Node* getHead() {
+			return this->head;
 		}
 
 		Move returnMove(int num) {
@@ -39,41 +54,9 @@ class MoveList {
 			return temp->getMove();
 		}
 
-		void remove(int num) {
-			Node* temp = head;
-			Node* temp2;
-
-			for (int i = 1; i < num - 1; i++) {
-				temp = temp->getNext();
-			}
-
-			if (num == 1) {
-				this->head = temp->getNext();
-			}
-			else {
-				temp2 = temp->getNext()->getNext();
-
-				delete temp->getNext();
-
-				temp->setNext(temp2);
-			}
-		}
-
-		bool empty() {
-			if (this->head == NULL) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-
-		Node* getHead() {
-			return this->head;
-		}
-
 	private:
 		Node* head;
+		int count;
 };
 
 #endif

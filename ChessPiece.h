@@ -6,22 +6,23 @@ using namespace std;
 class ChessPiece
 {
 public:
-	ChessPiece(char type, int side, float x, float y, int posX, int posY);
+	ChessPiece(char type, int side, int posX, int posY);
 	ChessPiece();
+
 	char getType();
 	int getSide();
 	void setType(char type);
-	float getX();
-	float getY();
-	void setX(float x);
-	void setY(float x);
+
 	void setCastling(bool kingSpecial);
 
 	bool onBoard;
 	bool Selected;
 	bool hasMoved;
+	
+
 	int posX;
 	int posY;
+
 
 	bool dangerWhite;
 	bool dangerBlack;
@@ -35,6 +36,7 @@ private:
 	int side; //0 is black 1 is white
 	float x;
 	float y;
+
 
 };
 

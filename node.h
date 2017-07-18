@@ -5,8 +5,7 @@
 
 class Node{
 	public:	
-		Node(Move move, int points) {
-			this->points = points;
+		Node(Move move) {
 			this->nextMove = move;
 		}
 		Node() {}
@@ -27,14 +26,10 @@ class Node{
 			return this->next;
 		}
 
-		int getPoints() {
-			return this->points;
-		}
-
 
 	private:
 		Move nextMove;
-		int points;
+
 		Node* next;
 };
 
