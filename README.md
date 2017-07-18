@@ -1,6 +1,8 @@
-# ChessAI
-Complete game of chess with basic AI as an indivudal project.
+# Chess AI
+This project is a game of chess with the complete ruleset and basic AI. This project is programmed as an individual project for my personal educational purpose. 
 
-The visual aspect of the game is programmed with help of OpenGL. The shape of indivual chess pieces were formed with basic geometric shapes due to some error while importing the images of the ches pieces.
+The board representation was programmed with the help of OpenGL. The individual chess pieces were formed with basic geometric shapes due to some difficulties with importing images of the chess pieces.
 
-The rules and AI were programmed with C++ to allow the interactions within the game. The artifical integllence follows the minimax algothium to maxiumize the chance of winning.
+The rules and AI were programmed with C++ to allow the interactions within the game. The artificial intelligence was programmed based on the alpha-beta algorithm in the negamax framework.
+
+Reference: http://chessprogramming.wikispaces.com/
