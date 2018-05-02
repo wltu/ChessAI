@@ -5,8 +5,12 @@ class Move {
 	public:
 		Move(int x, int y, int currentX, int currentY, char type);
 		Move();
+		
+		//Final Location
 		int getX();
 		int getY();
+
+		// Current Location
 		int getCX();
 		int getCY();
 
@@ -21,4 +25,4 @@ class Move {
 
 };
 
-#endif
+#endif 

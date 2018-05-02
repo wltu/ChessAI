@@ -1,12 +1,14 @@
 #include "LegalMove.h"
 #include <iostream>
+
 using namespace std;
 
-LegalMove::LegalMove() {
-}
+LegalMove::LegalMove() {}
 
 //Hilight light possible move for the current chess piece.
 void LegalMove::Hightlight(ChessPiece board[8][8], int x, int y, bool danger) {
+	//danger boolean is used to mark the location dangerous location for  opposing team
+
 	if (!GameOver) {
 
 		if (!danger) {
@@ -19,87 +21,86 @@ void LegalMove::Hightlight(ChessPiece board[8][8], int x, int y, bool danger) {
 		int knightMoveY[4] = { -2,2,-1,1 };
 
 		switch (board[x][y].getType()) {
-		case'p':
-			if (side == 0) {
-				i = 1;
-			}
-			else {
-				i = -1;
-			}
-
-			if (y - i >= 0 && y - i < 8) {
-				if (!danger && !board[x][y - i].onBoard) {
-					action(board, x, y, x, y - i, false, side);
-
-					if (!board[x][y - 2 * i].onBoard && !board[x][y].hasMoved) {
-						action(board, x, y, x, y - 2 * i, false, side);
-					}
-				}
-
-				if (x + 1 < 8 && board[x + 1][y - i].onBoard && board[x + 1][y - i].getSide() != side || danger) {
-					action(board, x, y, x + 1, y - i, danger, side);
-				}
-				if (x - 1 >= 0 && board[x - 1][y - i].onBoard && board[x - 1][y - i].getSide() != side || danger) {
-					action(board, x, y, x - 1, y - i, danger, side);
-				}
-			}
-
-			break;
-
-		case 'r':
-			RookMove(board, x, y, 8, side, danger);
-
-			break;
-
-		case 'k':
-			for (int a = 0; a < 4; a++) {
-				if (a < 2) {
-					for (int b = 0; b < 2; b++) {
-						if ((y + knightMoveY[b]) >= 0 && (y + knightMoveY[b]) < 8) {
-							if ((x + knightMoveX[a]) >= 0 && (x + knightMoveX[a]) < 8) {
-								if (!board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard || danger) {
-									action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
-								}
-								else if (board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard && board[x + knightMoveX[a]][y + knightMoveY[b]].getSide() != side || danger) {
-									action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
-								}
-							}
-						}
-					}
+			case'p':
+				if (side == 0) {
+					i = 1;
 				}
 				else {
-					for (int b = 2; b < 4; b++) {
-						if ((y + knightMoveY[b]) >= 0 && (y + knightMoveY[b]) < 8) {
-							if ((x + knightMoveX[a]) >= 0 && (x + knightMoveX[a]) < 8) {
-								if (!board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard || danger) {
-									action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+					i = -1;
+				}
+
+				if (y - i >= 0 && y - i < 8) {
+					if (!danger && !board[x][y - i].onBoard) {
+						action(board, x, y, x, y - i, false, side);
+
+						if (!board[x][y - 2 * i].onBoard && !board[x][y].hasMoved) {
+							action(board, x, y, x, y - 2 * i, false, side);
+						}
+					}
+
+					if (x + 1 < 8 && board[x + 1][y - i].onBoard && board[x + 1][y - i].getSide() != side || danger) {
+						action(board, x, y, x + 1, y - i, danger, side);
+					}
+					if (x - 1 >= 0 && board[x - 1][y - i].onBoard && board[x - 1][y - i].getSide() != side || danger) {
+						action(board, x, y, x - 1, y - i, danger, side);
+					}
+				}
+
+				break;
+
+			case 'r':
+				RookMove(board, x, y, 8, side, danger);
+
+				break;
+
+			case 'k':
+				for (int a = 0; a < 4; a++) {
+					if (a < 2) {
+						for (int b = 0; b < 2; b++) {
+							if ((y + knightMoveY[b]) >= 0 && (y + knightMoveY[b]) < 8) {
+								if ((x + knightMoveX[a]) >= 0 && (x + knightMoveX[a]) < 8) {
+									if (!board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard || danger) {
+										action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+									}
+									else if (board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard && board[x + knightMoveX[a]][y + knightMoveY[b]].getSide() != side || danger) {
+										action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+									}
 								}
-								else if (board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard && board[x + knightMoveX[a]][y + knightMoveY[b]].getSide() != side || danger) {
-									action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+							}
+						}
+					}
+					else {
+						for (int b = 2; b < 4; b++) {
+							if ((y + knightMoveY[b]) >= 0 && (y + knightMoveY[b]) < 8) {
+								if ((x + knightMoveX[a]) >= 0 && (x + knightMoveX[a]) < 8) {
+									if (!board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard || danger) {
+										action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+									}
+									else if (board[x + knightMoveX[a]][y + knightMoveY[b]].onBoard && board[x + knightMoveX[a]][y + knightMoveY[b]].getSide() != side || danger) {
+										action(board, x, y, x + knightMoveX[a], y + knightMoveY[b], danger, side);
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-			break;
+				break;
 
-		case 'b':
-			BishopMove(board, x, y, 8, side, danger);
-			break;
-		case 'Q':
-			RookMove(board, x, y, 8, side, danger);
-			BishopMove(board, x, y, 8, side, danger);
-			break;
-		case 'K':
-			RookMove(board, x, y, 1, side, danger);
-			BishopMove(board, x, y, 1, side, danger);
+			case 'b':
+				BishopMove(board, x, y, 8, side, danger);
+				break;
+			case 'Q':
+				RookMove(board, x, y, 8, side, danger);
+				BishopMove(board, x, y, 8, side, danger);
+				break;
+			case 'K':
+				RookMove(board, x, y, 1, side, danger);
+				BishopMove(board, x, y, 1, side, danger);
 				
-			if (!danger) {
-				Castling(board, x, y);
-
-			}
-			break;
+				if (!danger) {
+					Castling(board, x, y);
+				}
+				break;
 		}
 	}
 }
@@ -390,7 +391,6 @@ void LegalMove::Castling(ChessPiece board[8][8], int x, int y) {
 
 
 	if (!board[x][y].hasMoved) {
-
 		if (!board[x + 3][y].hasMoved) {
 			for (int j = 1; j <= 2; j++) {
 
@@ -440,11 +440,10 @@ void LegalMove::Castling(ChessPiece board[8][8], int x, int y) {
 				board[x - 2][y].Selected = true;
 			}
 		}
-
-		
 	}
 }
 
+//Either set the current location as highlight or danger.
 void LegalMove::action(ChessPiece board[8][8], int ix, int iy, int x, int y, bool danger, int side) {
 	if (danger) {
 		
@@ -459,6 +458,7 @@ void LegalMove::action(ChessPiece board[8][8], int ix, int iy, int x, int y, boo
 		board[x][y].Selected = true;
 	}
 }
+
 
 void LegalMove::setDangers(ChessPiece board[8][8]) {
 	for (int i = 0; i < 8; i++) {

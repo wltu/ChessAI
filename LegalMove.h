@@ -18,6 +18,7 @@ public:
 
 	ChessPiece board2[8][8];
 
+	//Initial King Position
 	int whiteKingX = 4;
 	int whiteKingY = 7;
 	int blackKingX = 4;

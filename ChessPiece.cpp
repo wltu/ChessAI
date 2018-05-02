@@ -2,8 +2,7 @@
 #include <iostream>
 using namespace std;
 
-//Provide method to give legal moves.
-
+//Provide method to give legal moves
 ChessPiece::ChessPiece(char type, int side, int posX, int posY) {
 	this->type = type;
 	this->side = side;

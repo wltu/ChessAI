@@ -24,14 +24,14 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(size, size);
 	glutCreateWindow("Chess");
 
-	// callbacks for main window
+	// Callbacks for main window
 	glutDisplayFunc(display);
 	glutReshapeFunc(adjustSize);
 
-	//Mouse input
+	// Mouse Input
 	glutMouseFunc(mouse);
 
-	//Keyboard
+	// Keyboard Input
 	glutKeyboardFunc(keyboard);
 
 	glutMainLoop();

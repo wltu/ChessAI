@@ -388,11 +388,6 @@ void Board::setPiece(ChessPiece piece, float x, float y) {
 	}
 
 	drawChessBase(x, y);
-
-	//Switch case for type
-	//side to determin color.
-
-
 }
 
 //Draw the base of the chess piece.
@@ -522,6 +517,7 @@ Node* Board::SaveTheKing(ChessPiece piece) {
 				ClearDanger();
 				checker.setDangers(pieces);
 
+				//Check if king is in danger after the swap
 				if (side == 0) {
 					if (pieces[checker.whiteKingX][checker.whiteKingY].dangerWhite) {
 						remove = true;
@@ -643,6 +639,7 @@ void Board::CheckGameStatus() {
 
 }
 
+
 //Clear danger area on the board.
 void Board::ClearDanger() {
 	for (int i = 0; i < 8; i++) {
@@ -670,6 +667,9 @@ void Board::reset() {
 
 	draw();
 }
+
+
+
 
 //AI methods
 void Board::AIMove() {
@@ -923,7 +923,6 @@ Move Board::Opening(Move start) {
 	return move;
 }
 
-
 //Return the move with the best value.
 Move Board::bestMove(int level, int side) {
 
@@ -1026,6 +1025,7 @@ int Board::ScoreMove(int depth, int side, int points) {
 	else {
 		checker.resetHighlight(pieces);
 
+		//Center Board
 		for (int j = 2; j < 6; j++) {
 			for (int i = 0; i < 8; i++) {
 				current = pieces[i][j];
@@ -1125,7 +1125,7 @@ int Board::ScoreMove(int depth, int side, int points) {
 			}
 		}
 
-
+		//Side Board
 		for (int j = 0; j < 8; j++) {
 			for (int i = 0; i < 8; i++) {
 				current = pieces[i][j];
@@ -1226,7 +1226,7 @@ int Board::ScoreMove(int depth, int side, int points) {
 				}
 			}
 
-			if (j == 2) {
+			if (j == 1) {
 				j = 5;
 			}
 		}
